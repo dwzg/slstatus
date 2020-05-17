@@ -18,8 +18,8 @@ static const char unknown_str[] = "n/a";
  *                                                     NULL on OpenBSD/FreeBSD
  * battery_remaining   battery remaining HH:MM         battery name (BAT0)
  *                                                     NULL on OpenBSD/FreeBSD
- * cpu_perc            cpu usage in percent            NULL
- * cpu_freq            cpu frequency in MHz            NULL
+ * cpu_perc            cpu usage in percent            CPU name (cpu0)
+ * cpu_freq            cpu frequency in MHz            CPU name (cpu0)
  * datetime            date and time                   format string (%F %T)
  * disk_free           free disk space in GB           mountpoint path (/)
  * disk_perc           disk usage in percent           mountpoint path (/)
