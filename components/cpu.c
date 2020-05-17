@@ -6,14 +6,22 @@
 #include "../util.h"
 
 #if defined(__linux__)
+	#include <limits.h>
+	#include <stdlib.h>
+
 	const char *
-	cpu_freq(void)
+	cpu_freq(const char *cpu)
 	{
 		uintmax_t freq;
+		char path[PATH_MAX];
+
+		if (esnprintf(path, sizeof(path), "/sys/devices/system/cpu/%s/"
+		              "cpufreq/scaling_cur_freq", cpu) < 0) {
+			return NULL;
+                }
 
 		/* in kHz */
-		if (pscanf("/sys/devices/system/cpu/cpu0/cpufreq/"
-		           "scaling_cur_freq", "%ju", &freq) != 1) {
+		if (pscanf(path, "%ju", &freq) != 1) {
 			return NULL;
 		}
 
@@ -21,18 +29,38 @@
 	}
 
 	const char *
-	cpu_perc(void)
+	cpu_perc(const char *cpu)
 	{
+		FILE *fp;
+		size_t line_len = 0;
+		char *line = NULL;
 		static long double a[7];
 		long double b[7], sum;
 
-		memcpy(b, a, sizeof(b));
-		/* cpu user nice system idle iowait irq softirq */
-		if (pscanf("/proc/stat", "%*s %Lf %Lf %Lf %Lf %Lf %Lf %Lf",
-		           &a[0], &a[1], &a[2], &a[3], &a[4], &a[5], &a[6])
-		    != 7) {
+		if (!(fp = fopen("/proc/stat", "r"))) {
+			warn("fopen '/proc/stat':");
 			return NULL;
 		}
+
+		memcpy(b, a, sizeof(b));
+
+		while (getline(&line, &line_len, fp) >= 0) {
+			if (!strncmp(line, cpu, strlen(cpu) - 1)) {
+			/* cpu user nice system idle iowait irq softirq */
+				sscanf(line,
+				       "%*s %Lf %Lf %Lf %Lf %Lf %Lf %Lf",
+				       &a[0], &a[1], &a[2], &a[3],
+				       &a[4], &a[5], &a[6]);
+				break;
+			}
+		}
+		free(line);
+		if (ferror(fp)) {
+			warn("getline '/proc/stat':");
+			return NULL;
+		}
+		fclose(fp);
+
 		if (b[0] == 0) {
 			return NULL;
 		}
