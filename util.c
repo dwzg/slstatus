@@ -126,6 +126,23 @@ fmt_human(uintmax_t num, int base)
 	return bprintf("%.1f %s", scaled, prefix[i]);
 }
 
+const char *
+fmt_percentage(unsigned int num)
+{
+	const char *s;
+
+	if (num < 10) {
+		s = bprintf("  %d", num);
+	} else if (num < 100) {
+		s = bprintf(" %d", num);
+	} else {
+		num = 100; /* fix values bigger than 100 */
+		s = bprintf("%d", num);
+	}
+
+	return s;
+}
+
 int
 pscanf(const char *path, const char *fmt, ...)
 {
