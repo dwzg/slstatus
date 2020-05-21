@@ -127,6 +127,42 @@ fmt_human(uintmax_t num, int base)
 }
 
 const char *
+fmt_human_fixed(uintmax_t num, int base, unsigned int exp)
+{
+	double scaled;
+	size_t i;
+	const char **prefix;
+	const char *prefix_1000[] = { "", "k", "M", "G", "T", "P", "E", "Z",
+	                              "Y" };
+	const char *prefix_1024[] = { "", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei",
+	                              "Zi", "Yi" };
+
+	if (exp > (LEN(prefix_1000) - 1) * 3) {
+		warn("fmt_human_fixed: Invalid exponent");
+		return NULL;
+	}
+
+	switch (base) {
+	case 1000:
+		prefix = prefix_1000;
+		break;
+	case 1024:
+		prefix = prefix_1024;
+		break;
+	default:
+		warn("fmt_human_fixed: Invalid base");
+		return NULL;
+	}
+
+	scaled = num;
+	for (i = 0; i < exp / 3; i++) {
+		scaled /= base;
+	}
+
+	return bprintf("%.1f %s", scaled, prefix[i]);
+}
+
+const char *
 fmt_percentage(unsigned int num)
 {
 	const char *s;
