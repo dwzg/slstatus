@@ -25,7 +25,7 @@
 			return NULL;
 		}
 
-		return fmt_human(freq * 1000, 1000);
+		return fmt_human_fixed(freq * 1000, 1000, 9);
 	}
 
 	const char *
