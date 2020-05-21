@@ -5,6 +5,8 @@
 
 #if defined(__linux__)
 	#include <stdint.h>
+	#include <stdlib.h>
+	#include <string.h>
 
 	const char *
 	ram_free(void)
@@ -61,20 +63,50 @@
 	const char *
 	ram_used(void)
 	{
-		uintmax_t total, free, buffers, cached;
+		FILE *fp;
+		long total, memfree, buffers, cached, shared, reclaimable;
+		struct {
+			const char *name;
+			const size_t len;
+			long *var;
+		} ent[] = {
+			{ "MemTotal",     sizeof("MemTotal") - 1,     &total },
+			{ "Shmem",        sizeof("Shmem") - 1,        &shared },
+			{ "MemFree",      sizeof("MemFree") - 1,      &memfree },
+			{ "Buffers",      sizeof("Buffers") - 1,      &buffers },
+			{ "Cached",       sizeof("Cached") - 1,       &cached },
+			{ "SReclaimable", sizeof("SReclaimable") - 1, &reclaimable },
+		};
+		size_t line_len = 0, left = LEN(ent), i;
+		char *line = NULL;
 
-		if (pscanf("/proc/meminfo",
-		           "MemTotal: %ju kB\n"
-		           "MemFree: %ju kB\n"
-		           "MemAvailable: %ju kB\n"
-		           "Buffers: %ju kB\n"
-		           "Cached: %ju kB\n",
-		           &total, &free, &buffers, &buffers, &cached) != 5) {
+
+		if (!(fp = fopen("/proc/meminfo", "r"))) {
+			warn("fopen '/proc/meminfo':");
 			return NULL;
 		}
 
-		return fmt_human((total - free - buffers - cached) * 1024,
-		                 1024);
+		/* read file line by line and extract field information */
+		while (left > 0 && getline(&line, &line_len, fp) >= 0) {
+			for (i = 0; i < LEN(ent); i++) {
+				if (!strncmp(line, ent[i].name, ent[i].len)) {
+					sscanf(line + ent[i].len + 1,
+					       "%ld kB\n", ent[i].var);
+					left--;
+					break;
+				}
+			}
+		}
+		free(line);
+		if (ferror(fp)) {
+			warn("getline '/proc/meminfo':");
+			return NULL;
+		}
+
+		fclose(fp);
+		return fmt_human((total + shared
+		                - memfree - buffers - cached - reclaimable)
+		                * 1024, 1024);
 	}
 #elif defined(__OpenBSD__)
 	#include <stdlib.h>
