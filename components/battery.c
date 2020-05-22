@@ -44,6 +44,27 @@
 	}
 
 	const char *
+	battery_animation(const char *bat)
+	{
+		int perc, i;
+		char path[PATH_MAX], animation[] = "[          ]";
+
+		if (esnprintf(path, sizeof(path),
+		              "/sys/class/power_supply/%s/capacity", bat) < 0) {
+			return NULL;
+		}
+		if (pscanf(path, "%d", &perc) != 1) {
+			return NULL;
+		}
+
+		for (i = 0; i < perc / 10; ++i) {
+			animation[i+1] = '#';
+		}
+
+		return bprintf("%s", animation);
+	}
+
+	const char *
 	battery_state(const char *bat)
 	{
 		static struct {
