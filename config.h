@@ -71,7 +71,7 @@ static const struct arg args[] = {
 	{ wifi_essid,        "WiFi: %s |;",   "wlp3s0" },
 	{ datetime,          " %s | ",        "%F %T" },
 	{ kernel_release,    "%s | ",         NULL },
-	{ cpu_perc,          "CPU: %s %% ",   "cpu" },
+	{ cpu_animation,     "CPU: %s ",      "cpu" },
 	{ cpu_freq,          "%sHz ",         "cpu0" },
 	{ temp,              "%s °C | ",      "/sys/devices/platform/coretemp.0/hwmon/hwmon4/temp2_input" },
 	{ ram_used,          "RAM: %sB / ",   NULL },
