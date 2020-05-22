@@ -76,6 +76,62 @@
 		               ((b[0] + b[1] + b[2] + b[5] + b[6]) -
 		                (a[0] + a[1] + a[2] + a[5] + a[6])) / sum));
 	}
+
+	const char *
+	cpu_animation(const char *cpu)
+	{
+		FILE *fp;
+		size_t line_len = 0;
+		char *line = NULL;
+		static long double a[7];
+		long double b[7], sum;
+		int perc, i;
+		char animation[] = "[          ]";
+
+		if (!(fp = fopen("/proc/stat", "r"))) {
+			warn("fopen '/proc/stat':");
+			return NULL;
+		}
+
+		memcpy(b, a, sizeof(b));
+
+		while (getline(&line, &line_len, fp) >= 0) {
+			if (!strncmp(line, cpu, strlen(cpu) - 1)) {
+			/* cpu user nice system idle iowait irq softirq */
+				sscanf(line,
+				       "%*s %Lf %Lf %Lf %Lf %Lf %Lf %Lf",
+				       &a[0], &a[1], &a[2], &a[3],
+				       &a[4], &a[5], &a[6]);
+				break;
+			}
+		}
+		free(line);
+		if (ferror(fp)) {
+			warn("getline '/proc/stat':");
+			return NULL;
+		}
+		fclose(fp);
+
+		if (b[0] == 0) {
+			return NULL;
+		}
+
+		sum = (b[0] + b[1] + b[2] + b[3] + b[4] + b[5] + b[6]) -
+		      (a[0] + a[1] + a[2] + a[3] + a[4] + a[5] + a[6]);
+
+		if (sum == 0) {
+			return NULL;
+		}
+
+		perc = (int)(100 * ((b[0] + b[1] + b[2] + b[5] + b[6])
+		          - (a[0] + a[1] + a[2] + a[5] + a[6])) / sum);
+
+		for (i = 0; i < perc / 10; ++i) {
+			animation[i+1] = '#';
+		}
+
+		return bprintf("%s", animation);
+         }
 #elif defined(__OpenBSD__)
 	#include <sys/param.h>
 	#include <sys/sched.h>
