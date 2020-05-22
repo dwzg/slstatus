@@ -63,14 +63,21 @@ static const char unknown_str[] = "n/a";
  */
 static const struct arg args[] = {
 	/* function          format           argument */
+	{ battery_animation, "| BAT: %s ",    "BAT0" },
+	{ battery_perc,      "%s %% ",        "BAT0" },
+	{ battery_remaining, "%s ",           "BAT0" },
+	{ battery_state,     "%s | ",         "BAT0" },
+	{ vol_perc,          "VOL: %s %% | ", "/dev/mixer" },
+	{ wifi_essid,        "WiFi: %s |;",   "wlp3s0" },
+	{ datetime,          " %s | ",        "%F %T" },
+	{ kernel_release,    "%s | ",         NULL },
 	{ cpu_perc,          "CPU: %s %% ",   "cpu" },
 	{ cpu_freq,          "%sHz ",         "cpu0" },
 	{ temp,              "%s °C | ",      "/sys/devices/platform/coretemp.0/hwmon/hwmon4/temp2_input" },
 	{ ram_used,          "RAM: %sB / ",   NULL },
 	{ ram_total,         "%sB | ",        NULL },
-	{ battery_perc,      "BAT: %s %% ",   "BAT0" },
-	{ battery_remaining, "%s ",           "BAT0" },
-	{ battery_state,     "%s | ",         "BAT0" },
-	{ vol_perc,          "VOL: %s %% | ", "/dev/mixer" },
-	{ datetime,          "%s |",          "%F %T" },
+	{ disk_used,         "SSD: %sB / ",   "/" },
+	{ disk_total,        "%sB | ",        "/" },
+	{ ipv4,              "WiFi: %s ",     "wlp3s0" },
+	{ ipv4,              "LAN: %s | ",    "eno0" },
 };
