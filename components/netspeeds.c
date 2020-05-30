@@ -29,8 +29,8 @@
 			return NULL;
 		}
 
-		return fmt_human((rxbytes - oldrxbytes) * 1000 / interval,
-		                 1024);
+		return fmt_human_fixed((rxbytes - oldrxbytes) * 1000 / interval,
+		                 1024, 6);
 	}
 
 	const char *
@@ -55,8 +55,8 @@
 			return NULL;
 		}
 
-		return fmt_human((txbytes - oldtxbytes) * 1000 / interval,
-		                 1024);
+		return fmt_human_fixed((txbytes - oldtxbytes) * 1000 / interval,
+		                 1024, 6);
 	}
 #elif defined(__OpenBSD__) | defined(__FreeBSD__)
 	#include <string.h>
