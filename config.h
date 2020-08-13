@@ -23,7 +23,7 @@ static const char unknown_str[] = "n/a";
  * datetime            date and time                   format string (%F %T)
  * disk_free           free disk space in GB           mountpoint path (/)
  * disk_perc           disk usage in percent           mountpoint path (/)
- * disk_total          total disk space in GB          mountpoint path (/")
+ * disk_total          total disk space in GB          mountpoint path (/)
  * disk_used           used disk space in GB           mountpoint path (/)
  * entropy             available entropy               NULL
  * gid                 GID of current user             NULL
@@ -62,22 +62,20 @@ static const char unknown_str[] = "n/a";
  * wifi_essid          WiFi ESSID                      interface name (wlan0)
  */
 static const struct arg args[] = {
-	/* function          format           argument */
-	{ battery_animation, "| BAT: %s ",    "BAT0" },
-	{ battery_perc,      "%s %% ",        "BAT0" },
-	{ battery_remaining, "%s ",           "BAT0" },
-	{ battery_state,     "%s | ",         "BAT0" },
-	{ vol_perc,          "VOL: %s %% | ", "/dev/mixer" },
-	{ wifi_essid,        "WiFi: %s |;",   "wlp3s0" },
-	{ datetime,          " %s | ",        "%F %T" },
-	{ kernel_release,    "%s | ",         NULL },
-	{ cpu_animation,     "CPU: %s ",      "cpu" },
-	{ cpu_freq,          "%sHz ",         "cpu0" },
-	{ temp,              "%s °C | ",      "/sys/devices/platform/coretemp.0/hwmon/hwmon4/temp2_input" },
-	{ ram_used,          "RAM: %sB / ",   NULL },
-	{ ram_total,         "%sB | ",        NULL },
-	{ disk_used,         "SSD: %sB / ",   "/" },
-	{ disk_total,        "%sB | ",        "/" },
-	{ ipv4,              "WiFi: %s ",     "wlp3s0" },
-	{ ipv4,              "LAN: %s | ",    "eno0" },
+	/* function          format             argument */
+	{ vol_perc,          "│ VOL: %s %% │ ", "/dev/mixer" },
+	{ datetime,          "%s │",            "%F %T" },
+	{ kernel_release,    "; %s │ ",         NULL },
+	{ cpu_perc,          "CPU: %s %% ",     "cpu" },
+	{ cpu_freq,          "%sHz ",           "cpu0" },
+	{ temp,              "%s °C │ ",        "/sys/devices/platform/coretemp.0/hwmon/hwmon1/temp1_input" },
+	{ ram_used,          "RAM: %sB / ",     NULL },
+	{ ram_total,         "%sB │ ",          NULL },
+	{ disk_used,         "[/]: %sB / ",     "/" },
+	{ disk_total,        "%sB │ ",          "/" },
+	{ disk_used,         "[/home]: %sB / ", "/home" },
+	{ disk_total,        "%sB │ ",          "/home" },
+	{ ipv4,              "IP: %s │ ",       "enp7s0" },
+	{ netspeed_rx,       "↓: %sB/s ",    "enp7s0" },
+	{ netspeed_tx,       "↑: %sB/s │ ",    "enp7s0" },
 };
